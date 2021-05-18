@@ -3,6 +3,7 @@ var position = 45;
 var paddle;
 var goingleft = true;
 var goingToTop = true;
+var BodemRaak = false;
 var bal;
 class Steen {
 	Kleur;
@@ -62,11 +63,11 @@ function beweegball() {
 		var shotupY = parseInt(bal[a].style.top, 10);
 		var shotupX = parseInt(bal[a].style.left, 10);
 
-		if (shotupY >= 100) {
-			//			hoogte is 100/ raakt bodem
-			//			console.log('hoogte is 100')
-			goingToTop = true;
-		}
+//		if (shotupY >= 100) {
+//			//			hoogte is 100/ raakt bodem
+//			//			console.log('hoogte is 100')
+//			goingToTop = true;
+//		}
 		if (shotupY <= 0) {
 			//			hoogte is 0/ raakt top
 			//			console.log('hoogte is 0')
@@ -81,6 +82,9 @@ function beweegball() {
 			//			left is 0/ raakt links
 			//			console.log('left is 0')
 			goingleft = false
+		}
+		if(shotupY >= 100){
+			BodemRaak = true;
 		}
 		if (goingleft) {
 
@@ -99,6 +103,10 @@ function beweegball() {
 		if (!goingToTop) {
 			bal[a].style.top = shotupY + 1 + "%";
 
+		}
+		if(BodemRaak){
+			bal[a].style.left = shotupX + 0 + "%";
+			bal[a].style.top = shotupY - 1 + "%";
 		}
 		var blokken = document.getElementsByClassName('blok1');
 		for (var i = 0; i < blokken.length; i++) {
@@ -129,11 +137,11 @@ function beweegball() {
 		var rakenpaddle = collisionpaddle(bal[a], paddle);
 		if (rakenpaddle && goingToTop) {
 			bal[a].style.top = shotupY + 1 + "%";
-			
+
 		}
 		if (rakenpaddle && !goingToTop) {
 			bal[a].style.top = shotupY - 1 + "%";
-			
+
 		}
 	}
 
@@ -164,10 +172,26 @@ function maakPaddle() {
 //	paddle.style.left = x + "px";
 //	
 //}
-function movePaddle(e){
-var x = e.clientX;
-var newposX = x - 60;
-paddle.style.left = newposX + "px"
+//function movePaddle(e) {
+//	var x = e.clientX;
+//	var newposX = x - 60;
+//	paddle.style.left = newposX + "px"
+//	console.log(x)
+//}
+window.onload = init();
+function init() {
+	if (window.Event) {
+	document.captureEvents(Event.MOUSEMOVE);
+	}
+	document.onmousemove = getCursorXY;
+}
+
+function getCursorXY(e) {
+	var x;
+	x = (window.Event) ? e.pageX : event.clientX + (document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft);
+	var newX = x - 60;
+	paddle.style.left = newX + "px";
+	console.log(x)
 }
 setInterval(beweegball, 15);
 function collision(ball, blok) {
@@ -190,7 +214,7 @@ function collisionpaddle(ball, paddle) {
 
 	var imgtop = parseInt(ball.style.top, 10)
 	var paddletop = parseInt(paddle.style.top, 10)
-	paddletop = (paddletop *10000)/100
+	paddletop = (paddletop * 10000) / 100
 	var imgleft = parseInt(ball.style.left, 10)
 	var paddleleft = parseInt(paddle.style.left, 10)
 	if (imgtop <= paddletop + presiesie && imgtop >= paddletop - presiesie) {
