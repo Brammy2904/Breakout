@@ -4,7 +4,10 @@ var paddle;
 var goingleft = true;
 var goingToTop = true;
 var BodemRaak = false;
+var shotupY;
+var shotupX
 var bal;
+var Left;
 class Steen {
 	Kleur;
 	Breedte;
@@ -60,14 +63,14 @@ function beweegball() {
 	var bal = document.getElementsByClassName('ball');
 
 	for (var a = 0; a < bal.length; a++) {
-		var shotupY = parseInt(bal[a].style.top, 10);
-		var shotupX = parseInt(bal[a].style.left, 10);
+		shotupY = parseInt(bal[a].style.top, 10);
+		shotupX = parseInt(bal[a].style.left, 10);
 
-//		if (shotupY >= 100) {
-//			//			hoogte is 100/ raakt bodem
-//			//			console.log('hoogte is 100')
-//			goingToTop = true;
-//		}
+		//		if (shotupY >= 100) {
+		//			//			hoogte is 100/ raakt bodem
+		//			//			console.log('hoogte is 100')
+		//			goingToTop = true;
+		//		}
 		if (shotupY <= 0) {
 			//			hoogte is 0/ raakt top
 			//			console.log('hoogte is 0')
@@ -75,7 +78,7 @@ function beweegball() {
 		}
 		if (shotupX >= 100) {
 			//			left is 100/ raakt rechts
-			console.log('left is 100')
+
 			goingleft = true;
 		}
 		if (shotupX <= 0) {
@@ -83,8 +86,10 @@ function beweegball() {
 			//			console.log('left is 0')
 			goingleft = false
 		}
-		if(shotupY >= 100){
+		if (shotupY == 100) {
 			BodemRaak = true;
+			Left = bal[a].style.left
+
 		}
 		if (goingleft) {
 
@@ -104,10 +109,7 @@ function beweegball() {
 			bal[a].style.top = shotupY + 1 + "%";
 
 		}
-		if(BodemRaak){
-			bal[a].style.left = shotupX + 0 + "%";
-			bal[a].style.top = shotupY - 1 + "%";
-		}
+
 		var blokken = document.getElementsByClassName('blok1');
 		for (var i = 0; i < blokken.length; i++) {
 			var raken = collision(bal[a], blokken[i]);
@@ -135,14 +137,14 @@ function beweegball() {
 			}
 		}
 		var rakenpaddle = collisionpaddle(bal[a], paddle);
-		if (rakenpaddle && goingToTop) {
-			bal[a].style.top = shotupY + 1 + "%";
 
+		if (rakenpaddle) {
+					bal[a].style.top = shotupY - 1 + "%";
+			console.log('paddle geraakt')
 		}
-		if (rakenpaddle && !goingToTop) {
-			bal[a].style.top = shotupY - 1 + "%";
+		
 
-		}
+
 	}
 
 }
@@ -156,6 +158,25 @@ function maakPaddle() {
 	paddle.style.left = parseInt(position) + "%";
 	paddle.style.top = 75 + "%";
 	document.getElementById("body").appendChild(paddle);
+}
+setInterval(stuiter, 20)
+function stuiter() {
+	if (BodemRaak) {
+		var bal1 = document.getElementsByClassName('ball');
+		for (var i = 0; i < bal1.length; i++) {
+
+			document.getElementById('body').removeChild(bal1[i])
+		}
+		var balDead = document.createElement("img");
+		balDead.className = "gif"
+		balDead.src = "ball1.gif";
+		balDead.style.width = 70 + "px";
+		balDead.style.height = 70 + "px";
+		balDead.style.position = "fixed";
+		balDead.style.left = parseInt(Left) + "%";
+		balDead.style.top = 91 + "%";
+		document.getElementById("body").appendChild(balDead);
+	}
 }
 //function beweegPaddle(key) {
 //	if (position < 90 && key == 'ArrowRight') {
@@ -181,7 +202,7 @@ function maakPaddle() {
 window.onload = init();
 function init() {
 	if (window.Event) {
-	document.captureEvents(Event.MOUSEMOVE);
+		document.captureEvents(Event.MOUSEMOVE);
 	}
 	document.onmousemove = getCursorXY;
 }
@@ -190,8 +211,11 @@ function getCursorXY(e) {
 	var x;
 	x = (window.Event) ? e.pageX : event.clientX + (document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft);
 	var newX = x - 60;
-	paddle.style.left = newX + "px";
-	console.log(x)
+
+var xPercent = parseInt(newX / window.innerWidth * 100);
+
+
+	paddle.style.left = xPercent + "%";
 }
 setInterval(beweegball, 15);
 function collision(ball, blok) {
@@ -210,11 +234,8 @@ function collision(ball, blok) {
 }
 function collisionpaddle(ball, paddle) {
 	var presiesie = 4;
-	console.log('geraakt')
-
 	var imgtop = parseInt(ball.style.top, 10)
 	var paddletop = parseInt(paddle.style.top, 10)
-	paddletop = (paddletop * 10000) / 100
 	var imgleft = parseInt(ball.style.left, 10)
 	var paddleleft = parseInt(paddle.style.left, 10)
 	if (imgtop <= paddletop + presiesie && imgtop >= paddletop - presiesie) {
