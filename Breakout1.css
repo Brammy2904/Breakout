@@ -1,1 +1,18 @@
-@charset "ISO-8859-1";
+body {
+	background-color: black;
+}
+
+#background {
+	display:none;
+	background-color: white;
+	width: 110%;
+	height: 110%;
+	position:fixed;
+}
+#text{
+	position:relative;
+	color: white;
+	width:400px;
+	margin: auto;
+	top: 280px;
+}

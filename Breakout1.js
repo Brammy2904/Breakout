@@ -7,7 +7,13 @@ var BodemRaak = false;
 var shotupY;
 var shotupX
 var bal;
+var score3;
+var score2;
+var score1;
 var Left;
+
+var levens = 3;
+var gameStart = false;
 class Steen {
 	Kleur;
 	Breedte;
@@ -17,19 +23,38 @@ class Steen {
 		this.img = img;
 	}
 }
+function startGame(key) {
+	if (key == 32) {
+		gameStart = true;
+	}
+	if (gameStart) {
+		
+		document.getElementById("text").style.display = "none";
+		maakImages()
+		drawLevens3()
+		PlayBackgroundMusic()
+		//		document.getElementById('body').onload = function(){}
+		document.getElementById('body').onkeydown = function() {
+			maakBall(event.key)	
+		};
+	}
+}
+function startScreen() {
+	if (!gameStart) {
+	}
+}
 function maakSteen(positionX, positionY) {
 	var steen = document.createElement("img");
 	steen.className = "blok1"
-	steen.src = "steenNormal.png";
-	steen.style.width = 70 + "px";
-	steen.style.height = 70 + "px";
+	steen.src = "block.png";
+	steen.style.width = 100 + "px";
+	steen.style.height = 50 + "px";
 	steen.style.position = "fixed";
 	var Steen1 = new Steen(steen);
 	steen.style.left = parseInt(positionX) + "%";
 	steen.style.top = parseInt(positionY) + "%";
 	document.getElementById("body").appendChild(steen);
 	stenen.push(Steen1);
-
 }
 function maakImages() {
 	maakPaddle();
@@ -42,9 +67,40 @@ function maakImages() {
 	maakSteen(67, 5);
 	maakSteen(77, 5);
 	maakSteen(87, 5);
+//	-------------------------
+	maakSteen(7, 15);
+	maakSteen(17, 15);
+	maakSteen(27, 15);
+	maakSteen(37, 15);
+	maakSteen(47, 15);
+	maakSteen(57, 15);
+	maakSteen(67, 15);
+	maakSteen(77, 15);
+	maakSteen(87, 15);
 	console.log("aantal stenen: " + stenen.length)
-
-
+}
+function maakImages1() {
+	
+	maakSteen(7, 5);
+	maakSteen(17, 5);
+	maakSteen(27, 5);
+	maakSteen(37, 5);
+	maakSteen(47, 5);
+	maakSteen(57, 5);
+	maakSteen(67, 5);
+	maakSteen(77, 5);
+	maakSteen(87, 5);
+//	-------------------------
+	maakSteen(7, 15);
+	maakSteen(17, 15);
+	maakSteen(27, 15);
+	maakSteen(37, 15);
+	maakSteen(47, 15);
+	maakSteen(57, 15);
+	maakSteen(67, 15);
+	maakSteen(77, 15);
+	maakSteen(87, 15);
+	console.log("aantal stenen: " + stenen.length)
 }
 function maakBall(key) {
 	if (key == 'Enter') {
@@ -61,16 +117,9 @@ function maakBall(key) {
 }
 function beweegball() {
 	var bal = document.getElementsByClassName('ball');
-
 	for (var a = 0; a < bal.length; a++) {
 		shotupY = parseInt(bal[a].style.top, 10);
 		shotupX = parseInt(bal[a].style.left, 10);
-
-		//		if (shotupY >= 100) {
-		//			//			hoogte is 100/ raakt bodem
-		//			//			console.log('hoogte is 100')
-		//			goingToTop = true;
-		//		}
 		if (shotupY <= 0) {
 			//			hoogte is 0/ raakt top
 			//			console.log('hoogte is 0')
@@ -88,32 +137,25 @@ function beweegball() {
 		}
 		if (shotupY == 100) {
 			BodemRaak = true;
-			Left = bal[a].style.left
-
-		}
+			Score();
+			Left = bal[a].style.left	
+}
+			
 		if (goingleft) {
-
-
 			bal[a].style.left = shotupX - 1 + "%";
 		}
 		if (!goingleft) {
-
-
 			bal[a].style.left = shotupX + 1 + "%";
 		}
 		if (goingToTop) {
 			bal[a].style.top = shotupY - 1 + "%";
-
 		}
 		if (!goingToTop) {
 			bal[a].style.top = shotupY + 1 + "%";
-
 		}
-
 		var blokken = document.getElementsByClassName('blok1');
 		for (var i = 0; i < blokken.length; i++) {
 			var raken = collision(bal[a], blokken[i]);
-
 			if (raken && goingToTop && goingleft) {
 				bal[a].style.top = shotupY + 1 + "%";
 				document.getElementById("body").removeChild(blokken[i])
@@ -124,7 +166,6 @@ function beweegball() {
 				document.getElementById("body").removeChild(blokken[i])
 				bal[a].style.left = shotupX - 1 + "%";
 			}
-
 			if (raken && !goingToTop && !goingleft) {
 				bal[a].style.top = shotupY - 1 + "%";
 				document.getElementById("body").removeChild(blokken[i])
@@ -137,16 +178,12 @@ function beweegball() {
 			}
 		}
 		var rakenpaddle = collisionpaddle(bal[a], paddle);
-
 		if (rakenpaddle) {
-					bal[a].style.top = shotupY - 1 + "%";
+			goingToTop = true
+			HitPaddleSound()
 			console.log('paddle geraakt')
 		}
-		
-
-
 	}
-
 }
 function maakPaddle() {
 	paddle = document.createElement("img");
@@ -162,9 +199,10 @@ function maakPaddle() {
 setInterval(stuiter, 20)
 function stuiter() {
 	if (BodemRaak) {
+		
 		var bal1 = document.getElementsByClassName('ball');
 		for (var i = 0; i < bal1.length; i++) {
-
+//
 			document.getElementById('body').removeChild(bal1[i])
 		}
 		var balDead = document.createElement("img");
@@ -178,27 +216,6 @@ function stuiter() {
 		document.getElementById("body").appendChild(balDead);
 	}
 }
-//function beweegPaddle(key) {
-//	if (position < 90 && key == 'ArrowRight') {
-//		paddle.style.left = position + 2 + "%";
-//		position += 2;
-//	}
-//	if (position > 0 && key == 'ArrowLeft') {
-//		paddle.style.left = position - 2 + "%";
-//		position -= 2;
-//	}
-//}
-//function movePaddle(e) {
-//	var x = e.screenX;
-//	paddle.style.left = x + "px";
-//	
-//}
-//function movePaddle(e) {
-//	var x = e.clientX;
-//	var newposX = x - 60;
-//	paddle.style.left = newposX + "px"
-//	console.log(x)
-//}
 window.onload = init();
 function init() {
 	if (window.Event) {
@@ -206,15 +223,11 @@ function init() {
 	}
 	document.onmousemove = getCursorXY;
 }
-
 function getCursorXY(e) {
 	var x;
 	x = (window.Event) ? e.pageX : event.clientX + (document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft);
 	var newX = x - 60;
-
-var xPercent = parseInt(newX / window.innerWidth * 100);
-
-
+	var xPercent = parseInt(newX / window.innerWidth * 100);
 	paddle.style.left = xPercent + "%";
 }
 setInterval(beweegball, 15);
@@ -245,4 +258,63 @@ function collisionpaddle(ball, paddle) {
 	} else {
 		return false;
 	}
+}
+function drawLevens3(){
+		score3 = document.createElement("img");
+		score3.className = "Leven3"
+		score3.src = "Leven3.png";
+		score3.style.width = 100 + "px";
+		score3.style.height = 70 + "px";
+		score3.style.position = "fixed";
+		score3.style.left = 2 + "%";
+		score3.style.top = 80 + "%";
+		document.getElementById("body").appendChild(score3);
+}
+function drawLevens2(){
+	document.getElementById('body').removeChild(score3);
+		score2 = document.createElement("img");
+		score2.className = "Leven2"
+		score2.src = "Leven2.png";
+		score2.style.width = 100 + "px";
+		score2.style.height = 70 + "px";
+		score2.style.position = "fixed";
+		score2.style.left = 2 + "%";
+		score2.style.top = 80 + "%";
+		document.getElementById("body").appendChild(score2);
+}
+function drawLevens1(){
+	document.getElementById('body').removeChild(score2);
+	score1 = document.createElement("img");
+		score1.className = "Leven1"
+		score1.src = "Leven1.png";
+		score1.style.width = 100 + "px";
+		score1.style.height = 70 + "px";
+		score1.style.position = "fixed";
+		score1.style.left = 2 + "%";
+		score1.style.top = 80 + "%";
+		document.getElementById("body").appendChild(score1);
+}
+function Score() {
+	levens = levens - 1;
+	console.log(levens)
+	if(levens == 2){
+		console.log(levens)
+		drawLevens2()
+		maakImages1()
+	}
+	if(levens ==1){
+	console.log(levens)
+		drawLevens1()
+		maakImages1()
+	}
+}
+function PlayBackgroundMusic() {
+	audio3 = new Audio("background.mp3");
+	audio3.volume = 0.1;
+	audio3.play();
+}
+function HitPaddleSound() {
+	const audio = new Audio("hitPaddle.mp3");
+	audio.volume = 0.8;
+	audio.play();
 }
